@@ -1,0 +1,16 @@
+
+Heidenhein TNC 150 
+SCREEN BE110
+
+PINOUT 3x3 PLUG -> screen side
+
+blue   = pixel signal forground / text
+pink   = pixel signal background
+yellow = line sync signal
+green  = frame sync signal (48.9Hz)
+
+grey = 12 V Power for CRT screen !
+brown = GND
+xxx   = GND
+
+
