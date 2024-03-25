@@ -56,7 +56,10 @@ sh start.sh
 
 ![MIKRON-HEIDENHEIN-TNC150](https://raw.githubusercontent.com/flo932/crt-screen-video-grabber/master/screenhot/2024-03-25_20-28-35.png "Virtual CRT")
 
+see pinout in doc/
+example:frame sync,line sync,pixel pin... voltage divider from 6v to 3v
 ![MIKRON-HEIDENHEIN-TNC150](https://raw.githubusercontent.com/flo932/crt-screen-video-grabber/master/screenhot/IMG_20240325_104117x.jpg "USB Logic Analyzer")
 
-![MIKRON-HEIDENHEIN-TNC150](https://raw.githubusercontent.com/flo932/crt-screen-video-grabber/master/screenhot/IMG_20240322_153252x.jpg "OLD CNC CONTROLER, with Broken screen")
+old cnc-controler, with broken crt-screen
+![MIKRON-HEIDENHEIN-TNC150](https://raw.githubusercontent.com/flo932/crt-screen-video-grabber/master/screenhot/IMG_20240322_153252x.jpg "OLD CNC CONTROLER, with broken screen")
 
