@@ -38,10 +38,21 @@ record a frame sample for archive
 # self.cmd="sigrok-cli --driver=fx2lafw --channels D0=f,D1=h,D2=v --config samplerate=8m  --samples=1700k"
 ```
 
+clone git repo
+```
+git clone https://github.com/flo932/crt-screen-video-grabber.git
+```
 
-![MIKRON-HEIDENHEIN-TNC150](https://raw.githubusercontent.com/flo932/crt-screen-video-grabber/master/screenhot/2024-03-25_20-28-35.png)
+start programm
+```
+cd crt-screen-video-grabber
+python3 screen3.py
+```
 
-![MIKRON-HEIDENHEIN-TNC150](https://raw.githubusercontent.com/flo932/crt-screen-video-grabber/master/screenhot/IMG_20240325_104117x.jpg)
 
-![MIKRON-HEIDENHEIN-TNC150](https://raw.githubusercontent.com/flo932/crt-screen-video-grabber/master/screenhot/IMG_20240322_153252x.jpg)
+![MIKRON-HEIDENHEIN-TNC150](https://raw.githubusercontent.com/flo932/crt-screen-video-grabber/master/screenhot/2024-03-25_20-28-35.png, "Virtual CRT")
+
+![MIKRON-HEIDENHEIN-TNC150](https://raw.githubusercontent.com/flo932/crt-screen-video-grabber/master/screenhot/IMG_20240325_104117x.jpg, "USB Logic Analyzer")
+
+![MIKRON-HEIDENHEIN-TNC150](https://raw.githubusercontent.com/flo932/crt-screen-video-grabber/master/screenhot/IMG_20240322_153252x.jpg, "OLD CNC CONTROLER, with Broken screen")
 
