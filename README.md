@@ -50,9 +50,9 @@ python3 screen3.py
 ```
 
 
-![MIKRON-HEIDENHEIN-TNC150](https://raw.githubusercontent.com/flo932/crt-screen-video-grabber/master/screenhot/2024-03-25_20-28-35.png, "Virtual CRT")
+![MIKRON-HEIDENHEIN-TNC150](https://raw.githubusercontent.com/flo932/crt-screen-video-grabber/master/screenhot/2024-03-25_20-28-35.png "Virtual CRT")
 
-![MIKRON-HEIDENHEIN-TNC150](https://raw.githubusercontent.com/flo932/crt-screen-video-grabber/master/screenhot/IMG_20240325_104117x.jpg, "USB Logic Analyzer")
+![MIKRON-HEIDENHEIN-TNC150](https://raw.githubusercontent.com/flo932/crt-screen-video-grabber/master/screenhot/IMG_20240325_104117x.jpg "USB Logic Analyzer")
 
-![MIKRON-HEIDENHEIN-TNC150](https://raw.githubusercontent.com/flo932/crt-screen-video-grabber/master/screenhot/IMG_20240322_153252x.jpg, "OLD CNC CONTROLER, with Broken screen")
+![MIKRON-HEIDENHEIN-TNC150](https://raw.githubusercontent.com/flo932/crt-screen-video-grabber/master/screenhot/IMG_20240322_153252x.jpg "OLD CNC CONTROLER, with Broken screen")
 
