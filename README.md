@@ -27,6 +27,7 @@ apt install python3-pygame
 
 # optional 
 apt install sigrok pulseview
+apt install screen
 
 ```
 
@@ -46,7 +47,10 @@ git clone https://github.com/flo932/crt-screen-video-grabber.git
 start programm
 ```
 cd crt-screen-video-grabber
-python3 screen3.py
+python3 screen2.py
+
+# optional startup script
+sh start.sh
 ```
 
 
