@@ -54,7 +54,7 @@ sh start.sh
 ```
 
 
-![MIKRON-HEIDENHEIN-TNC150](https://raw.githubusercontent.com/flo932/crt-screen-video-grabber/master/screenhot/2024-03-25_20-28-35.png "Virtual CRT")
+![MIKRON-HEIDENHEIN-TNC150](https://raw.githubusercontent.com/flo932/crt-screen-video-grabber/master/screenhot/IMG_20240325_103959.jpg "Virtual CRT")
 
 see pinout in doc/
 example:frame sync,line sync,pixel pin... voltage divider from 6v to 3v
