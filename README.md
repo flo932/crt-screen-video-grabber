@@ -37,3 +37,8 @@ record a frame sample for archive
 # read all screen frame from file recorded with
 # self.cmd="sigrok-cli --driver=fx2lafw --channels D0=f,D1=h,D2=v --config samplerate=8m  --samples=1700k"
 ```
+
+
+
+![MIKRON-HEIDENHEIN-TNC150](https://raw.githubusercontent.com/flo932/crt-screen-video-grabber/master/screenhot/IMG_20240322_153252x.jpg)
+
