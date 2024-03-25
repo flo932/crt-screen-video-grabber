@@ -1,0 +1,7 @@
+# need: on debian
+#/usr/lib/x86_64-linux-gnu/libSDL2.so
+
+# install manual ! dependecy error !
+apt download libsdl2-dev
+dpkg -i libsdl2-dev_2.0.14+dfsg2-3+deb11u1_amd64.deb
+
