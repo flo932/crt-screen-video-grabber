@@ -251,7 +251,7 @@ pub fn main() !void {
 
         c.SDL_RenderPresent(renderer);
 
-        c.SDL_Delay(300); // 0.5 sec
+        c.SDL_Delay(3); // 0.5 sec
         print("frame:{}\n", .{frame_nr});
         frame_nr+=1;
     }
