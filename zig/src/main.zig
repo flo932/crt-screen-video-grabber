@@ -28,7 +28,6 @@ pub fn Read(allocator:anytype,f:anytype,p:anytype,l:anytype,start_frame:anytype,
 
     //print("c {any}", .{file_buffer.len});
 
-    var run3:bool = true;
     var k:u64=0;
     var v:u8 = ' ';
     var sw:u8 = ' ';
@@ -44,10 +43,22 @@ pub fn Read(allocator:anytype,f:anytype,p:anytype,l:anytype,start_frame:anytype,
     var pix_line_old:u64 = 0;
     var i:u64 = 0;
     var i_ok:u8 = 0;
-    while(run3){
+    while(true){
+
+        if(fps>4){
+           fps=0;
+           break;
+        }
+
+        if( k >= file_buffer.len){
+            k = 0;
+            print("file restart #################################", .{});
+        }
+
         i_ok=0;
         v = file_buffer[k];
-        // print("c {d} {any}\n", .{k,v});
+        k+=1;
+
         if( v == 'f'){
             sw = 'f';
         }
@@ -58,122 +69,98 @@ pub fn Read(allocator:anytype,f:anytype,p:anytype,l:anytype,start_frame:anytype,
             sw = 'l';
         }
         
-        if( v == '0' or v == '1'){
-            if( init == 1){
-                if( sw == 'f'){
-                }
-                if( sw == 'p'){
-                }
-                if( sw == 'l'){
+
+        
+        if( v != '0' and v != '1'){
+            continue;
+        }
+
+        if( sw == 'f'){
+            if( fps_old != v ){ 
+                fps_old=v;
+                if( v == '1'){
+                    print("   fps:{} k:{},i:{} pix:{} pch:{} sfr:{}\n", .{fps,k,i,pix_line,pix_change,start_frame});
+                    fps+=1;
+                    pix_change = 0;
                 }
             }
+        }
+
+        if(fps<1){
+            continue;
+        }
+        if(fps < start_frame){
+            continue;
+        }
+
+        if( init == 1){
             if( sw == 'f'){
-                if(fps >= start_frame){
-                    if(fps>1){
-                        if( init == 1){
-                            try f.append(v);
-                        }else{
-                            if(f.items.len > i){
-                                f.items[i] = v;
-                            }
-                        }
-                        pix_change = 0;
-                        i_ok = 1;
-                    }
-                }
-                if( fps_old != v){
-                    fps_old=v;
-                    if( v == '1'){
-                        print("fps++ {} {} {}\n", .{fps,pix_line,pix_change});
-                        fps+=1;
-                    }
-                }
+                try f.append(v);
             }
             if( sw == 'p'){
-                if(fps >= start_frame){
-                    if(fps>1){
-                       if( init == 1){
-                           try p.append(v);
-                       }else{
-                           if(p.items.len > i){
-                               if( p.items[i] != v){
-                                 pix_change += 1;
-                               }
-                               pix_change += 1;
-                               p.items[i] = v;
-                           }
-                       }
-                       i_ok = 1;
-                    }
-                }
+                try p.append(v);
+                pix_change += 1;
                 pix_line += 1;
             }
             if( sw == 'l'){
-                if(fps >= start_frame){
-                    if(fps>1){
-                        if( init == 1){
-                            try l.append(v);
-                        }else{
-                            if(l.items.len > i){
-                                l.items[i] = v;
+                try l.append(v);
+            }
+            continue;
+        }
+
+        i+=1;
+        if(i >= p.items.len ){
+            i=0;
+            continue;
+        }
+        //print("- i:{} {c},{c}\n", .{i,sw,v});
+
+        if( sw == 'f'){
+            f.items[i] = v;
+            pix_change = 0;
+
+        }else if( sw == 'p'){
+            if(p.items[i] != v){
+                pix_change += 1;
+            }
+            p.items[i] = v;
+
+        }else if( sw == 'l'){
+            l.items[i] = v;
+
+
+            if( line2_old != v){
+                line2_old=v;
+
+                if( v == '1'){
+                    line2_count+=1;
+                    if(pix_line > 1){
+                        pix_line_old = 100; //pix_line;
+                    }
+                    var j:u46 = 0;
+                    if( pix_line_old >= 1){
+                        while( j < pix_line_old-1){
+                            if( f.items.len >= j){
+                                break;
                             }
+                            f.items[j] = 0;
+                            p.items[j] = 1;
+                            l.items[j] = 0;
+                            j+=1;
                         }
-                        i_ok = 1;
+                        if( j < f.items.len){
+                            f.items[j] = '0';
+                            p.items[j] = '0';
+                            l.items[j] = '1';
+                        }
                     }
-                }
-                if( line2_old != v){
-                    line2_old=v;
-                    if( v == '1'){
-                        line2_count+=1;
-                        if(pix_line > 1){
-                            pix_line_old = 100; //pix_line;
-                        }//else{
-                            var j:u46 = 0;
-                           if( pix_line_old >= 1){
-                               //f.items[j] = '0';
-                               //p.items[j] = '0';
-                               //l.items[j] = '1';
-                                while( j < pix_line_old-1){
-                                    if( f.items.len >= j){
-                                        break;
-                                    }
-                                   f.items[j] = 0;
-                                   p.items[j] = 1;
-                                   l.items[j] = 0;
-                                   j+=1;
-                                }
-                                if( j < f.items.len){
-                                    f.items[j] = '0';
-                                    p.items[j] = '0';
-                                    l.items[j] = '1';
-                                }
-                           }
-                        //}
-                        pix_line = 0;
-                    }
+                    pix_line = 0;
                 }
             }
         }
-        if(i_ok==1){
-            i+=1;
-        }
+       
 
-        k+=1;
-        if(k>file_buffer.len-1){
-            run3=false;
-        }
-        if(fps>2){
-           fps=0;
-           break;
-        }
     }
-    //print("\n", .{});
-    //print("pix   count: {d}\n", .{k});
-    //print("pix   count: {d}\n", .{pix_line});
-    //print("frame_count: {d}\n", .{fps});
-    //print("start_frame: {d}\n", .{start_frame});
-    //print("lines : {d}\n", .{line2_count});
-    //print("\n", .{});
 
 
 }
@@ -292,20 +279,11 @@ pub fn main() !void {
 
         var run5:bool = true;
         const force_line_brake:u32 = 788; // auto fill missing/blank lines
-        // ---------------------
-        //var f = std.ArrayList(u8).init(allocator);
-        //defer f.deinit();
-        //var p = std.ArrayList(u8).init(allocator);
-        //defer p.deinit();
-        //var l = std.ArrayList(u8).init(allocator);
-        //defer l.deinit();
         
         //try Clean(&f,&p,&l);
-
         //start_frame = 0;
         //_ = try Read(allocator,&f,&p,&l,start_frame,0);
         //start_frame += 1;
-        // ---------------------
 
         while(run5){
             while (c.SDL_PollEvent(&event) != 0) {
@@ -384,17 +362,11 @@ pub fn main() !void {
             x+=1;
             ix+=2;
 
-            //rect3.x=30;
             rect3.y+=7;
             if(rect3.y > 400){
                 rect3.y = 0;
                 rect3.x+=7;
-                //c.SDL_RenderPresent(renderer);
-                //print("frame:{} {d} {d}\n", .{frame_nr,p.items.len,start_frame});
             }
-            //_ = c.SDL_SetRenderDrawColor(renderer, 0xff, 0xaa, 0xaa, 0xff);
-            // _ = c.SDL_RenderFillRect(renderer, &rect3);
-            //print("frame:{} {d} {d}\n", .{frame_nr,p.items.len,start_frame});
         }
 
         _ = c.SDL_SetRenderDrawColor(renderer, 250, 0, 0, 0xff);
