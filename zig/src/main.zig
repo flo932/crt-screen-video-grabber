@@ -5,7 +5,8 @@ const c = @cImport({
 });
 const assert = @import("std").debug.assert;
 const print = std.debug.print;
-
+const raster = @import("raster.zig");
+const raster_digit = @import("raster_digit.zig");
 
 pub fn Read(allocator:anytype,f:anytype,p:anytype,l:anytype,start_frame:anytype,init:u8) !void {
 
@@ -23,7 +24,7 @@ pub fn Read(allocator:anytype,f:anytype,p:anytype,l:anytype,start_frame:anytype,
     const file_buffer = try file.readToEndAlloc(allocator, buffer_size);
     defer allocator.free(file_buffer);
 
-    print("c {any}", .{file_buffer.len});
+    //print("c {any}", .{file_buffer.len});
 
     var run3:bool = true;
     var k:u64=0;
@@ -37,6 +38,7 @@ pub fn Read(allocator:anytype,f:anytype,p:anytype,l:anytype,start_frame:anytype,
     var line2_old:u64=0;
     
     var pix_line:u64 = 0;
+    var pix_line_old:u64 = 0;
     var i:u64 = 0;
     var i_ok:u8 = 0;
     while(run3){
@@ -55,64 +57,85 @@ pub fn Read(allocator:anytype,f:anytype,p:anytype,l:anytype,start_frame:anytype,
 
         if( v == '0' or v == '1'){
             if( sw == 'f'){
-                if(fps <= start_frame){
-                }else if(fps>1){
-                    if( init == 1){
-                        try f.append(v);
-                    }else{
-                        if(f.items.len < v){
-                            f.items[i] = v;
+                if(fps >= start_frame){
+                    if(fps>1){
+                        if( init == 1){
+                            try f.append(v);
+                        }else{
+                            if(f.items.len < v){
+                                f.items[i] = v;
+                            }
                         }
+                        i_ok = 1;
                     }
-                    i_ok = 1;
                 }
-
                 if( fps_old != v){
                     fps_old=v;
                     if( v == '1'){
                         fps+=1;
-                        //print("--", .{});
-                        //print("\n", .{});
                     }
                 }
             }
             if( sw == 'p'){
-                if(fps <= start_frame){
-                }else if(fps>1){
-                    if( init == 1){
-                        try p.append(v);
-                    }else{
-                        if(p.items.len < v){
-                            p.items[i] = v;
-                        }
+                if(fps >= start_frame){
+                    if(fps>1){
+                       if( init == 1){
+                           try p.append(v);
+                       }else{
+                           if(p.items.len < v){
+                               p.items[i] = v;
+                           }
+                       }
+                       i_ok = 1;
                     }
-                    i_ok = 1;
                 }
                 pix_line += 1;
             }
             if( sw == 'l'){
-                if(fps <= start_frame){
-                }else if(fps>1){
-                    if( init == 1){
-                        try l.append(v);
-                    }else{
-                        if(l.items.len < v){
-                            l.items[i] = v;
+                if(fps >= start_frame){
+                    if(fps>1){
+                        if( init == 1){
+                            try l.append(v);
+                        }else{
+                            if(l.items.len < v){
+                                l.items[i] = v;
+                            }
                         }
+                        i_ok = 1;
                     }
-                    i_ok = 1;
                 }
                 if( line2_old != v){
                     line2_old=v;
                     if( v == '1'){
                         line2_count+=1;
-                        //print("--", .{});
-                        //print("\n", .{});
+                        if(pix_line > 1){
+                            pix_line_old = 100; //pix_line;
+                        }//else{
+                            var j:u46 = 0;
+                           if( pix_line_old >= 1){
+                               //f.items[j] = '0';
+                               //p.items[j] = '0';
+                               //l.items[j] = '1';
+                                while( j < pix_line_old-1){
+                                    if( f.items.len >= j){
+                                        break;
+                                    }
+                                   f.items[j] = 0;
+                                   p.items[j] = 1;
+                                   l.items[j] = 0;
+                                   j+=1;
+                                }
+                                if( j < f.items.len){
+                                    f.items[j] = '0';
+                                    p.items[j] = '0';
+                                    l.items[j] = '1';
+                                }
+                           }
+                        //}
                         pix_line = 0;
                     }
                 }
             }
-            // print(": {c} {d} {c}\n", .{sw,k,v});
         }
         if(i_ok==1){
             i+=1;
@@ -127,12 +150,13 @@ pub fn Read(allocator:anytype,f:anytype,p:anytype,l:anytype,start_frame:anytype,
            break;
         }
     }
-    print("\n", .{});
-    print("pix   count: {d}\n", .{k});
-    print("pix   count: {d}\n", .{pix_line});
-    print("frame_count: {d}\n", .{fps});
-    print("lines : {d}\n", .{line2_count});
-    print("\n", .{});
+    //print("\n", .{});
+    //print("pix   count: {d}\n", .{k});
+    //print("pix   count: {d}\n", .{pix_line});
+    //print("frame_count: {d}\n", .{fps});
+    //print("start_frame: {d}\n", .{start_frame});
+    //print("lines : {d}\n", .{line2_count});
+    //print("\n", .{});
 
 
 }
@@ -199,9 +223,12 @@ pub fn main() !void {
 
     var line_old:u8 = ' ';
     var line_on: u8 = 0;
+    var line_px: u64 = 0;
+    var line_count: u64 = 0;
     var frame_nr:u64 = 0;
     var ix:u64 = 0;
     while (!quit) {
+        line_count = 0;
         var event: c.SDL_Event = undefined;
         while (c.SDL_PollEvent(&event) != 0) {
             //print("{any}\n", .{event.type});
@@ -221,6 +248,7 @@ pub fn main() !void {
         _ = c.SDL_RenderClear(renderer);
 
         var f5:u8 = ' ';
+        var f5_old:u8 = ' ';
         var p5:u8 = ' ';
         var l5:u8 = ' ';
 
@@ -230,10 +258,11 @@ pub fn main() !void {
         var line_ok:u8 = 0;
         var rect2 = c.SDL_Rect{ .x = 0, .y = 0, .w = 1, .h = 2 };
         var rect3 = c.SDL_Rect{ .x = 0, .y = 0, .w = 3, .h = 3 };
+        var rect10 = c.SDL_Rect{ .x = 0, .y = 0, .w = 2, .h = 2 };
         var fps_i:u64=0;
 
         var run5:bool = true;
-
+        const force_line_brake:u32 = 788; // auto fill missing/blank lines
         // ---------------------
         //var f = std.ArrayList(u8).init(allocator);
         //defer f.deinit();
@@ -243,11 +272,20 @@ pub fn main() !void {
         //defer l.deinit();
 
 
-        //_ = try Read(allocator,&f,&p,&l,start_frame,0);
-        //start_frame += 100;
+        _ = try Read(allocator,&f,&p,&l,start_frame,0);
+        start_frame += 1;
         // ---------------------
 
         while(run5){
+            while (c.SDL_PollEvent(&event) != 0) {
+                //print("{any}\n", .{event.type});
+                switch (event.type) {
+                    c.SDL_QUIT => {
+                        quit = true;
+                    },
+                    else => {},
+                }
+            }
             if(ix>=p.items.len){
                 run5 = false;
                 continue;
@@ -265,15 +303,27 @@ pub fn main() !void {
             p5 = p.items[ix];
             l5 = l.items[ix];
 
-            //if( fps_i >= 2 and f5 == '1'){
-            //    break;
-            //}
+            if( fps_i >= 2 and f5 == '1'){
+                break;
+            }
             if( f5 == '1'){
-                fps_i += 1;
+                if(f5_old != f5){
+                    fps_i += 1;
+                    //print("{d} \n\n", .{fps_i});
+                }
+            }
+            if( f5 != f5_old){
+                f5_old = f5;
             }
             if( l5 == '1'){
                 if( line_old != l5){
                     line_on  = 1;
+                    print("{d} {d}\n", .{line_px,line_count});
+                    if( line_px > force_line_brake and line_count >= 1){
+                        y +=  @as(i32, @intCast(line_px / force_line_brake))*2;
+                    }
+                    line_px = 0;
+                    line_count += 1;
                 }
             }
             if( line_old != l5){
@@ -281,6 +331,7 @@ pub fn main() !void {
             }
 
             if( line_on == 1){
+
                 x = 0;
                 y += 2;
                 //print("{d} {d} {c} {c}\n", .{x,y,l5, p5});
@@ -295,24 +346,39 @@ pub fn main() !void {
                 _ = c.SDL_SetRenderDrawColor(renderer, 0xaa, 0xaa, 0xaa, 0xff);
                 line_ok = 1;
             }
+            line_px += 1;
             _ = c.SDL_RenderFillRect(renderer, &rect2);
             x+=1;
             ix+=2;
 
             //rect3.x=30;
-            rect3.y+=10;
-            if(rect3.y > 500){
+            rect3.y+=7;
+            if(rect3.y > 400){
                 rect3.y = 0;
-                rect3.x+=10;
+                rect3.x+=7;
+                //c.SDL_RenderPresent(renderer);
+                //print("frame:{} {d} {d}\n", .{frame_nr,p.items.len,start_frame});
             }
-            _ = c.SDL_SetRenderDrawColor(renderer, 0xff, 0xaa, 0xaa, 0xff);
-            _ = c.SDL_RenderFillRect(renderer, &rect3);
+            //_ = c.SDL_SetRenderDrawColor(renderer, 0xff, 0xaa, 0xaa, 0xff);
+            // _ = c.SDL_RenderFillRect(renderer, &rect3);
+            //print("frame:{} {d} {d}\n", .{frame_nr,p.items.len,start_frame});
         }
+
+        _ = c.SDL_SetRenderDrawColor(renderer, 250, 0, 0, 0xff);
+
+        rect10.x = 10;
+        rect10.y = 600;
+        try raster.raster_txt(renderer,rect10,"FRAME:");
+        rect10.x += 14*6;
+        try raster_digit.raster_int(renderer,rect10,frame_nr);
+        rect10.x = 10;
+        rect10.y += 16;
+        try raster.raster_txt(renderer,rect10,"hallo O");
 
         c.SDL_RenderPresent(renderer);
 
-        c.SDL_Delay(300); // 0.5 sec
-        print("frame:{} {d} {d}\n", .{frame_nr,p.items.len,start_frame});
+        //c.SDL_Delay(30); // 0.5 sec
         frame_nr+=1;
+        print("frame:{} {d} {d}\n", .{frame_nr,p.items.len,start_frame});
     }
 }
