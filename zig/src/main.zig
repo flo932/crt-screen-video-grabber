@@ -5,6 +5,8 @@ const c = @cImport({
 });
 const assert = @import("std").debug.assert;
 const print = std.debug.print;
+
+
 const raster = @import("raster.zig");
 const raster_digit = @import("raster_digit.zig");
 
@@ -36,7 +38,8 @@ pub fn Read(allocator:anytype,f:anytype,p:anytype,l:anytype,start_frame:anytype,
 
     var line2_count:u64=0;
     var line2_old:u64=0;
-    
+
+    var pix_change:u64 = 0;
     var pix_line:u64 = 0;
     var pix_line_old:u64 = 0;
     var i:u64 = 0;
@@ -54,24 +57,34 @@ pub fn Read(allocator:anytype,f:anytype,p:anytype,l:anytype,start_frame:anytype,
         if( v == 'v'){
             sw = 'l';
         }
-
+        
         if( v == '0' or v == '1'){
+            if( init == 1){
+                if( sw == 'f'){
+                }
+                if( sw == 'p'){
+                }
+                if( sw == 'l'){
+                }
+            }
             if( sw == 'f'){
                 if(fps >= start_frame){
                     if(fps>1){
                         if( init == 1){
                             try f.append(v);
                         }else{
-                            if(f.items.len < v){
+                            if(f.items.len > i){
                                 f.items[i] = v;
                             }
                         }
+                        pix_change = 0;
                         i_ok = 1;
                     }
                 }
                 if( fps_old != v){
                     fps_old=v;
                     if( v == '1'){
+                        print("fps++ {} {} {}\n", .{fps,pix_line,pix_change});
                         fps+=1;
                     }
                 }
@@ -82,7 +95,11 @@ pub fn Read(allocator:anytype,f:anytype,p:anytype,l:anytype,start_frame:anytype,
                        if( init == 1){
                            try p.append(v);
                        }else{
-                           if(p.items.len < v){
+                           if(p.items.len > i){
+                               if( p.items[i] != v){
+                                 pix_change += 1;
+                               }
+                               pix_change += 1;
                                p.items[i] = v;
                            }
                        }
@@ -97,7 +114,7 @@ pub fn Read(allocator:anytype,f:anytype,p:anytype,l:anytype,start_frame:anytype,
                         if( init == 1){
                             try l.append(v);
                         }else{
-                            if(l.items.len < v){
+                            if(l.items.len > i){
                                 l.items[i] = v;
                             }
                         }
@@ -161,6 +178,18 @@ pub fn Read(allocator:anytype,f:anytype,p:anytype,l:anytype,start_frame:anytype,
 
 }
 
+pub fn Clean(f:anytype,p:anytype,l:anytype) !void {
+    for( p.items, 0..) | v,i| {
+        _ = v;
+        //f.items[i] = 0;   
+        p.items[i] = '2';   
+        //l.items[i] = 0;   
+        _ = l;
+        _ = f;
+    }
+}
+
+
 pub fn main() !void {
 
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -168,7 +197,7 @@ pub fn main() !void {
     const allocator = gpa.allocator();
 
     const ms:u64 = std.time.ms_per_s/100;
-    print( "ms: {d}", .{ms});
+    print( "ms: {d}\n", .{ms});
     
     var start:i64 = @divFloor(std.time.milliTimestamp(), ms);
 
@@ -270,10 +299,12 @@ pub fn main() !void {
         //defer p.deinit();
         //var l = std.ArrayList(u8).init(allocator);
         //defer l.deinit();
+        
+        //try Clean(&f,&p,&l);
 
-
-        _ = try Read(allocator,&f,&p,&l,start_frame,0);
-        start_frame += 1;
+        //start_frame = 0;
+        //_ = try Read(allocator,&f,&p,&l,start_frame,0);
+        //start_frame += 1;
         // ---------------------
 
         while(run5){
@@ -318,7 +349,7 @@ pub fn main() !void {
             if( l5 == '1'){
                 if( line_old != l5){
                     line_on  = 1;
-                    print("{d} {d}\n", .{line_px,line_count});
+                    //print("px: {d} {d}\n", .{line_px,line_count});
                     if( line_px > force_line_brake and line_count >= 1){
                         y +=  @as(i32, @intCast(line_px / force_line_brake))*2;
                     }
@@ -342,6 +373,8 @@ pub fn main() !void {
 
             if( p5 == '1'){
                 _ = c.SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0xff);
+            }else if( p5 == '2'){
+                _ = c.SDL_SetRenderDrawColor(renderer, 0, 100, 0, 0xff);
             }else{
                 _ = c.SDL_SetRenderDrawColor(renderer, 0xaa, 0xaa, 0xaa, 0xff);
                 line_ok = 1;
@@ -379,6 +412,6 @@ pub fn main() !void {
 
         //c.SDL_Delay(30); // 0.5 sec
         frame_nr+=1;
-        print("frame:{} {d} {d}\n", .{frame_nr,p.items.len,start_frame});
+        print("frame:{} len:{d} start:{d}\n\n", .{frame_nr,p.items.len/787,start_frame});
     }
 }

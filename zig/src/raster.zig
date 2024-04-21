@@ -194,7 +194,7 @@ pub fn draw_mask(renderer:anytype,rect:anytype,mask:anytype) !void {
 
 
 pub fn raster_txt(renderer:anytype,rect:anytype,value:anytype) !void {
-    print("\nraster_txt: {any}", .{value});
+    //print("\nraster_txt: {any}", .{value});
 
     var rect10 = c.SDL_Rect{ .x = 0, .y = 0, .w = 2, .h = 2 };
     rect10.x = rect.x;
