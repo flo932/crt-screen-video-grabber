@@ -219,7 +219,8 @@ pub fn main() !void {
     }
     defer c.SDL_Quit();
 
-    const screen = c.SDL_CreateWindow("VIRTUAL CRT SCREEN", c.SDL_WINDOWPOS_UNDEFINED, c.SDL_WINDOWPOS_UNDEFINED, 800, 640, c.SDL_WINDOW_OPENGL) orelse
+    //const screen = c.SDL_CreateWindow("VIRTUAL CRT SCREEN", c.SDL_WINDOWPOS_UNDEFINED, c.SDL_WINDOWPOS_UNDEFINED, 800, 640, c.SDL_WINDOW_OPENGL) orelse
+    const screen = c.SDL_CreateWindow("VIRTUAL CRT SCREEN", c.SDL_WINDOWPOS_UNDEFINED, c.SDL_WINDOWPOS_UNDEFINED, 800, 640, 0) orelse
         {
         c.SDL_Log("Unable to create window: %s", c.SDL_GetError());
         return error.SDLInitializationFailed;
