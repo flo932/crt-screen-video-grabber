@@ -6,6 +6,8 @@ import parse2 as parse
 class File():
     def __init__(self):
         self.fname="records/mirkon_wf150_mill_heidenhein_tnc150.txt"
+        #self.fname="records/out.txt" #mirkon_wf150_mill_heidenhein_tnc150.txt"
+        #self.fname="records/out3.txt" #mirkon_wf150_mill_heidenhein_tnc150.txt"
     def junk(self):
         s1 = time.time()
         f,p,l = parse.read_file(self.fname)
@@ -67,7 +69,7 @@ reader = File()
 #reader = read_big_file()
 #reader.fname="frame_8m.txt"
 
-#reader = Stream()
+reader = Stream()
 #reader = read_big_file()
 
 lines=reader.junk()
@@ -116,6 +118,7 @@ while run:
             if pix != " ":
                 color = (255,255,255)
             pygame.draw.line(screen, color, [v+10,h+10], [v+10,h+10])#, width=1)
+            #pygame.draw.rect(screen, color, [v,h, 1,1])#, width=1)
         h += 2
 
     fps+=1

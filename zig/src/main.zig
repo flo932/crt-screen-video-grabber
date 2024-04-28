@@ -176,6 +176,44 @@ pub fn Clean(f:anytype,p:anytype,l:anytype) !void {
     }
 }
 
+//pub const init_SDL = struct {
+
+pub const init_SDL = struct {
+    renderer: *c.struct_SDL_Renderer,
+    screen: *c.struct_SDL_Window,
+
+    fn init() !init_SDL {
+        const x:u8 = 0;
+        _ = x;
+        if (c.SDL_Init(c.SDL_INIT_VIDEO) != 0) {
+            c.SDL_Log("Unable to initialize SDL: %s", c.SDL_GetError());
+            return error.SDLInitializationFailed;
+        }
+        defer c.SDL_Quit();
+
+        //const screen = c.SDL_CreateWindow("VIRTUAL CRT SCREEN", c.SDL_WINDOWPOS_UNDEFINED, c.SDL_WINDOWPOS_UNDEFINED, 800, 640, c.SDL_WINDOW_OPENGL) orelse
+        const screen = c.SDL_CreateWindow("VIRTUAL CRT SCREEN", c.SDL_WINDOWPOS_UNDEFINED, c.SDL_WINDOWPOS_UNDEFINED, 800, 640, 0) orelse
+            {
+            c.SDL_Log("Unable to create window: %s", c.SDL_GetError());
+            return error.SDLInitializationFailed;
+        };
+        defer c.SDL_DestroyWindow(screen);
+
+        const renderer = c.SDL_CreateRenderer(screen, -1, 0) orelse {
+            c.SDL_Log("Unable to create renderer: %s", c.SDL_GetError());
+            return error.SDLInitializationFailed;
+        };
+        defer c.SDL_DestroyRenderer(renderer);
+
+
+
+        c.SDL_RenderPresent(renderer);
+
+        return .{ .renderer= &renderer,
+                  .screen= &screen,
+                };
+   }
+};
 
 pub fn main() !void {
 
@@ -212,7 +250,9 @@ pub fn main() !void {
     print("\n", .{});
 
 
-
+    //const SDL = init_SDL.init();
+    //const renderer = SDL.renderer;
+    var quit = false;
     if (c.SDL_Init(c.SDL_INIT_VIDEO) != 0) {
         c.SDL_Log("Unable to initialize SDL: %s", c.SDL_GetError());
         return error.SDLInitializationFailed;
@@ -235,7 +275,6 @@ pub fn main() !void {
 
 
 
-    var quit = false;
     c.SDL_RenderPresent(renderer);
 
     var line_old:u8 = ' ';
