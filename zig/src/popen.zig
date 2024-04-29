@@ -18,7 +18,7 @@ pub fn popen(argv:anytype,stdout:anytype,stderr:anytype,allocator:anytype) !void
     
     try child.spawn();
     //try child.collectOutput(&stdout, &stderr, 47175488); // 1024
-    try child.collectOutput(stdout, stderr, 5896936);//47175488); // 1024
+    try child.collectOutput(stdout, stderr, 10200177);//47175488); // 1024
     const term = try child.wait();
 
     _ = term;

@@ -9,6 +9,7 @@ pub fn build(b: *Builder) void {
     const exe = b.addExecutable(.{
         .name = "crt-capture-zig",
         .root_source_file = .{ .path = "src/main.zig" },
+        //.root_source_file = .{ .path = "src/main_popen.zig" },
         .target = target,
         .optimize = optimize,
     });

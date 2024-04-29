@@ -1,4 +1,4 @@
-onst std = @import("std");
+const std = @import("std");
 const print = std.debug.print;
 const Child = std.process.Child;
 const ArrayList = std.ArrayList;
@@ -19,17 +19,15 @@ pub fn main() !void {
         "--config",  
         "samplerate=8m",  
         "--samples=1700k",
+        //"--output-format csv"
+        "-O",
+        "csv",
+        //"| wc",
     };
+    // -O csv
+    var i:u64 = 0;
 
     //print("{any}\n", .{argv});
-    var i:u64 = 0;
-    for( argv ) | elem | {
-        print("{s} ", .{elem});
-        i+=1;
-        if( i > 200){
-            break ;
-        }
-    }
     print("\n", .{});
     // By default, child will inherit stdout & stderr from its parents,
     // this usually means that child's output will be printed to terminal.
@@ -42,11 +40,12 @@ pub fn main() !void {
     }
 
     try popen(&argv,&stdout,&stderr,allocator);
+
     i= 0;
     for( stdout.items ) | elem | {
         print("{c}", .{elem});
         i+=1;
-        if( i > 300){
+        if( i > 1400){
             break ;
         }
     }
