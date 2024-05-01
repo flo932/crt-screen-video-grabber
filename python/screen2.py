@@ -8,8 +8,19 @@ class File():
         self.fname="records/mirkon_wf150_mill_heidenhein_tnc150.txt"
         #self.fname="records/out.txt" #mirkon_wf150_mill_heidenhein_tnc150.txt"
         #self.fname="records/out3.txt" #mirkon_wf150_mill_heidenhein_tnc150.txt"
+        #self.fname="../records/mirkon_wf150_mill_heidenhein_tnc150.txt"
+        self.fname="/home/user/projects/20240430-capture-csv/caputreMenue.log"
+        self.fname="/home/user/projects/20240430-capture-csv/startup3.log"
+        self.start = 0
     def junk(self):
         s1 = time.time()
+        f = open(self.fname)
+        lines = f.readlines()
+        f.close()
+        s2 = time.time()
+        #print("read_file",s2-s1)
+        #lines = parse_file(lines)
+
         f,p,l = parse.read_file(self.fname)
         s2 = time.time()
         lines = parse.get_line(f,p,l)
@@ -21,8 +32,8 @@ class File():
 class Stream():
     def __init__(self):
         # sample rate 4m 6m 8m 12m 24m
-        self.cmd="sigrok-cli --driver=fx2lafw --channels D0=f,D1=h,D2=v --config samplerate=24m  --samples=1700k"
-        self.cmd="sigrok-cli --driver=fx2lafw --channels D0=f,D1=h,D2=v --config samplerate=8m  --samples=1700k"
+        self.cmd="sigrok-cli --driver=fx2lafw --channels D0=f,D1=h,D2=v --config samplerate=24m --triggers f=r --samples=1700k"
+        #self.cmd="sigrok-cli --driver=fx2lafw --channels D0=f,D1=h,D2=v --config samplerate=8m  --samples=1700k"
     def junk(self):
         print(self.cmd)
         r=os.popen(self.cmd)
@@ -35,6 +46,8 @@ class read_big_file():
     def __init__(self):
         self.fname="frame_8m.txt"
         self.fname="../langes-sample-mikron2.txt" #frame_8m.txt"
+        #self.fname="/home/user/projects/20240430-capture-csv/caputreMenue.log"
+        self.fname="/home/user/projects/20240430-capture-csv/startup3.log"
         self.f = None
         self.l = 0
         self.lread = 55000
@@ -52,7 +65,7 @@ class read_big_file():
                     self.end = 1
                 lines.append(line)
 
-            for xx in range(30): # fastforward
+            for xx in range(3): # fastforward
                 for i in range(self.lread):
                     self.f.readline()
         else:
